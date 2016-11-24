@@ -1,0 +1,117 @@
+<?php
+$username = "root";
+$password = "ALD41Akip";
+$hostname = "10.71.1.16";
+$dbname   = "Amysta";
+date_default_timezone_set('UTC');
+$date = date('Y-m-d');
+
+//echo $date . PHP_EOL;
+
+
+
+//connection to the database
+$dbhandle = mysql_connect($hostname, $username, $password)
+  or die("Unable to connect to MySQL");
+//echo  "Connected to MySQL";
+
+//select a database to work with
+$selected = mysql_select_db("Amysta",$dbhandle)
+  or die("Could not select examples");
+
+//$result = mysql_query("select d.Name , d.Creation_Date from Domains d where d.Is_Reseller = 1  and Date(d.Creation_Date) = '$date'");
+
+$result = mysql_query("select d.Name, c.Creation_Date from Domains d join Customers c on d.ID_Customer = c.ID_Customer where d.ID_Domain_Type = '2';");
+
+ while($showtablerow = m?ysql_fetch_array($result))
+        {
+        echo $showtablerow[0] . PHP_EOL;
+
+        // Create Filename
+        $filename = "/opt/xenstack-script/newdomains/$showtablerow[0]";
+
+        if (file_exists($filename))
+        {
+        echo "File Exisit $showtablerow[0] Do Nothing" . PHP_EOL;
+        }
+
+
+        else {
+
+        echo "New Domain Request Found. Registering $showtablerow[0]" . PHP_EOL;
+
+
+        // File to Maintain Records
+        $domain_track_file = "/opt/xenstack-script/alldomains.txt";
+
+        // Read Last Line
+        $filearray = file("$domain_track_file");
+        $lastfifteenlines = array_slice($filearray,-1);
+        echo "Last Domain In File is $lastfifteenlines[0]" . PHP_EOL ;
+
+
+        //Enter New Entry
+        // Open the file to get existing content
+        $current = file_get_contents($domain_track_file);
+        // Append a new person to the file
+        $current .= "$showtablerow[0]\n";
+        // Write the contents back to the file
+        file_put_contents($domain_track_file, $current);
+
+
+        // Create Domain File
+        $my_file = "/opt/xenstack-script/newdomains/$showtablerow[0]";
+        $handle = fopen($my_file, 'w') or die('Cannot open file:  '.$my_file); //implicitly cre
+        fclose($handle);
+
+
+
+
+        // Open OwnCloud File
+        $config = '/var/www/html/owncloud/config/config.php';
+        $currentid = file_get_contents('/opt/xenstack-script/nextdomainid.txt'); //OwnCloud Config File Content
+        echo "Current ID  $currentid" . PHP_EOL;
+        $next = (int)$currentid;
+        $next = $next + 1 ;
+        file_put_contents('/opt/xenstack-script/nextdomainid.txt',$next);
+
+
+        $file=fopen($config,"r+") or exit("Unable to open file!");
+        $newuser =  " $currentid => '" . $showtablerow[0] . "', \r\n";
+        $insertPos=0;  // variable for saving //Users position
+
+                        while (!feof($file)) {
+                           $line=fgets($file);
+
+                                if (strpos($line, "//New")!==false) {
+
+                                   $insertPos=ftell($file);    // ftell will tell the position where the pointer moved, here is the new line after //Users.
+                                   $newline =  $newuser;
+                                }
+
+                                else
+                                {
+                                   $newline .= $line;   // append existing data with new data of user
+                                }
+
+
+                       }// End of WHile File
+
+        #echo $newline;
+        fseek($file,$insertPos);   // move pointer to the file position where we saved above
+        fwrite($file, $newline);
+        fclose($file);
+
+        }
+
+ } // Else Closes Here
+
+mysql_close($dbhandle);
+
+a = $File_name
+
+
+?>
+
+
+
