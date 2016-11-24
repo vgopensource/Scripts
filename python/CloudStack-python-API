@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# By: Kelcey Damage, 2012 & Kraig Amador, 2012
+
+# python Client to query CloudStack API
  
 api_url = 'your_stuff_here'
 apiKey = 'your_stuff_here'

@@ -1,0 +1,80 @@
+#!/opt/python/bin/python
+
+# Pre-Requisities
+# Packages wget , mc-python , mc-rubygem-nexus_cli must be installed
+
+import sys, argparse, csv, os, getpass, urlparse
+
+from urlparse import urlparse
+
+# Adding the command line arguments
+
+parser = argparse.ArgumentParser(prog='PROG')
+
+required = parser.add_argument_group('required arguments')
+
+required.add_argument('--source_url', dest='source_url', help='relative source_url for svn global repo',action='store', required=True)
+
+required.add_argument('--file', dest='file', help='csv file as source as well as maven coordinates', action='store', required=True)
+
+required.add_argument('--target_url', dest='target_url', help='target_url for Nexus infrastructure dev repo',action='store', required=True)
+
+args = parser.parse_args()
+
+# Accessing the command line arguments into objects
+
+csv_file = args.file
+
+svn_source_url = args.source_url
+
+nexus_publish_url = args.target_url
+
+parse_url = urlparse(nexus_publish_url)
+
+pkg_url = ('%s' %(parse_url.scheme+":"+'//'+parse_url.netloc))
+
+repo_id = ('%s' %(nexus_publish_url.split('/')[-1]))
+
+user = raw_input("enter the userid \n")
+
+passwd = getpass.getpass('password:')
+
+# open csv file
+
+with open(csv_file, 'rb') as f:
+
+# get content of columns
+
+ for row in csv.reader(f):
+
+     print row
+
+     dir='/tmp'
+
+     os.chdir(dir)
+
+     absolute_path = args.source_url + "/" + row[0]
+
+     os.system('wget %s' %absolute_path)
+
+     filename=absolute_path.split('/')[-1]
+
+     arg2=dir+"/"+filename
+
+ # check for the classifier field
+
+     if not row[5]:
+
+        arg1=row[2]+":"+row[3]+":"+row[4]+":"+row[6]
+
+     else:
+
+        arg1=row[2]+":"+row[3]+":"+row[4]+":"+row[5]+":"+row[6]
+
+     auth = "--" + "overrides" + " " + "url" + ":" + pkg_url + " " + "repository" + ":" + repo_id + " " + "username" + ":" + user + " " + "password" + ":" + passwd
+
+     cmdstring ='/opt/ruby/bin/nexus-cli push_artifact %s %s %s' %(arg1,arg2,auth)
+
+     os.system(cmdstring)
+
+f.close()
