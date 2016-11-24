@@ -1,10 +1,10 @@
 #!/bin/bash
  
 file="/opt/mnt/domains/alldomains.txt"
-Default_HTTP_File="/etc/apache2/sites-available/portal.xenstack.net.conf"
-Default_HTTPS_FILE="/etc/apache2/sites-available/portal-ssl.xenstack.net.conf"
+Default_HTTP_File="/etc/apache2/sites-available/<config-file>"
+Default_HTTPS_FILE="/etc/apache2/sites-available/<ssl-config-file>"
 Apache_File_Location="/etc/apache2/sites-available"
-staging_dns="staging.xenstack.net"
+dns_name="portal name"
 ETC_HOSTS="/etc/hosts"
 dir_root="/var/www/html"
 enabled_site="/etc/apache2/sites-enabled"
