@@ -1,7 +1,7 @@
 #!/opt/python/bin/python
 
 # Pre-Requisities
-# Packages wget , mc-python , mc-rubygem-nexus_cli must be installed
+# Packages wget , mc-python , rubygem-nexus_cli must be installed
 
 import sys, argparse, csv, os, getpass, urlparse
 
